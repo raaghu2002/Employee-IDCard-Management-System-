@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+}
+
+.navigation {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.navigation button {
+    padding: 12px 18px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.navigation button:hover {
+    background-color: #0056b3;
+}
+
+.search-bar {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    padding: 12px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+}
+
+.employee-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.employee-card:hover {
+    transform: translateY(-5px);
+}
+
+.employee-photo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    border: 2px solid #ddd;
+}
+
+.employee-info {
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.employee-info p {
+    margin: 5px 0;
+}
+
+.actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actions button {
+    padding: 10px 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #218838;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .navigation button {
+        width: 100%;
+        max-width: 250px;
+        padding: 10px;
+    }
+
+    .employee-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    }
+
+    .search-bar input {
+        width: 90%;
+    }
+
+    .employee-card {
+        padding: 15px;
+    }
+
+    .employee-photo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .actions button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<div class="navigation">
+    <button onclick="window.location.href='/'">Back to Home</button>
+</div>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search by name, role, or email..." oninput="filterEmployees()">
+</div>
+
+<h1>Employee List</h1>
+
+<div id="employeeGrid" class="employee-grid">
+    <!-- Employee cards will be added here -->
+</div>
+
+<script>
+    // Fetch and display employees
+    fetch('/api/employees')
+        .then(response => response.json())
+        .then(employees => {
+            const grid = document.getElementById('employeeGrid');
+            employees.forEach(employee => {
+                grid.appendChild(createEmployeeCard(employee));
+            });
+        })
+        .catch(error => console.error('Error:', error));
+
+<!--    function createEmployeeCard(employee) {-->
+<!--        const card = document.createElement('div');-->
+<!--        card.className = 'employee-card';-->
+<!--        card.setAttribute('data-search', `${employee.employeeName} ${employee.jobRole} ${employee.officeEmail}`.toLowerCase());-->
+
+<!--        const photoUrl = (employee.photoPath && employee.photoPath.trim() !== "")-->
+<!--            ? `/${employee.photoPath.replace(/^\/+/, '')}`-->
+<!--            : '/default-avatar.svg';-->
+
+<!--            console.log(employee.photoPath);-->
+<!--            console.log(employee.qrCodePath);-->
+
+
+<!--        card.innerHTML = `-->
+<!--            <img src="${photoUrl}" alt="Employee Photo" class="employee-photo">-->
+<!--            <h3>${employee.employeeName}</h3>-->
+<!--            <div class="employee-info">-->
+<!--                <p><strong>ID:</strong> ${employee.employeeId}</p>-->
+<!--                <p><strong>Role:</strong> ${employee.jobRole}</p>-->
+<!--                <p><strong>Email:</strong> ${employee.officeEmail}</p>-->
+<!--                <p><strong>Phone:</strong> ${employee.contactNumber}</p>-->
+<!--                <p><strong>Alt Contact:</strong> ${employee.alternateContactNumber}</p>-->
+<!--                <p><strong>Blood Group:</strong> ${employee.bloodGroup}</p>-->
+<!--                <p><strong>Gender:</strong> ${employee.gender}</p>-->
+<!--                <p><strong>DOB:</strong> ${employee.dob}</p>-->
+<!--                <p><strong>DOJ:</strong> ${employee.doj}</p>-->
+<!--                <p><strong>Marital Status:</strong> ${employee.maritalStatus}</p>-->
+<!--                <p><strong>Previous Company:</strong> ${employee.previousCompany || 'N/A'}</p>-->
+<!--                <p><strong>Address:</strong> ${employee.currentAddress}</p>-->
+<!--                <p><strong>Citizenship:</strong> ${employee.citizenship}</p>-->
+<!--                <p><strong>Job Role:</strong> ${employee.jobRole}</p>-->
+<!--                <p><strong>QR Code:</strong></p>-->
+<!--                <img src="${employee.qrCodePath}" alt="QR Code" width="80">-->
+<!--            </div>-->
+<!--&lt;!&ndash;            <div class="actions">&ndash;&gt;-->
+<!--&lt;!&ndash;                <button class="edit-btn" onclick="editEmployee(${employee.employeeId})">Edit</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                <button class="delete-btn" onclick="deleteEmployee(${employee.employeeId})">Delete</button>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        `;-->
+<!--        return card;-->
+<!--    }-->
+
+     function createEmployeeCard(employee) {
+    const card = document.createElement('div');
+    card.className = 'employee-card';
+    card.setAttribute('data-search', `${employee.employeeName} ${employee.jobRole} ${employee.officeEmail}`.toLowerCase());
+
+    // Directly use the paths from the employee object
+    let photoUrl = employee.photoPath ? employee.photoPath : '/images/default-avatar.svg';
+    let qrCodeUrl = employee.qrCodePath;
+
+    console.log(employee.photoPath);
+    console.log(employee.qrCodePath);
+
+  card.innerHTML = `
+        <img src="${photoUrl}" alt="Employee Photo" class="employee-photo">
+        <h3>${employee.employeeName}</h3>
+        <div class="employee-info">
+            <p><strong>ID:</strong> ${employee.employeeId}</p>
+            <p><strong>Role:</strong> ${employee.jobRole}</p>
+            <p><strong>Email:</strong> ${employee.officeEmail}</p>
+            <p><strong>Phone:</strong> ${employee.contactNumber}</p>
+            <p><strong>Alt Contact:</strong> ${employee.alternateContactNumber}</p>
+            <p><strong>Blood Group:</strong> ${employee.bloodGroup}</p>
+            <p><strong>Gender:</strong> ${employee.gender}</p>
+            <p><strong>DOB:</strong> ${employee.dob}</p>
+            <p><strong>DOJ:</strong> ${employee.doj}</p>
+            <p><strong>Marital Status:</strong> ${employee.maritalStatus}</p>
+            <p><strong>Previous Company:</strong> ${employee.previousCompany || 'N/A'}</p>
+            <p><strong>Address:</strong> ${employee.currentAddress}</p>
+            <p><strong>Citizenship:</strong> ${employee.citizenship}</p>
+            <p><strong>Job Role:</strong> ${employee.jobRole}</p>
+            <p><strong>QR Code:</strong></p>
+            <img src="${qrCodeUrl}" alt="QR Code" width="80">
+        </div>
+    `;
+    return card;
+}
+
+
+
+    function filterEmployees() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.getElementsByClassName('employee-card');
+
+        Array.from(cards).forEach(card => {
+            const searchData = card.getAttribute('data-search');
+            card.style.display = searchData.includes(searchText) ? '' : 'none';
+        });
+    }
+
+    function editEmployee(id) {
+        window.location.href = `employee-info?id=${id}&action=edit`;
+    }
+
+    function deleteEmployee(id) {
+        if (confirm('Are you sure you want to delete this employee?')) {
+            fetch(`/api/employees/${id}`, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Employee deleted successfully!');
+                        location.reload();
+                    } else {
+                        throw new Error('Failed to delete employee');
+                    }
+                })
+                .catch(error => alert('Error: ' + error.message));
+        }
+    }
+</script>
+
+</body>
+</html>

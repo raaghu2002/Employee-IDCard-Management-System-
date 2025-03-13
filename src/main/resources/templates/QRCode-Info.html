@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee ID Card</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .card {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: white;
+        }
+        .company-logo {
+            width: 120px;
+            display: block;
+            margin: 0 auto 15px;
+        }
+        .employee-photo {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #007bff;
+            display: block;
+            margin: 0 auto 15px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .info-value {
+            color: #212529;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <img src="/Wizzybox-Logo.webp" th:src="@{/Wizzybox-Logo.webp}" alt="Company Logo" class="company-logo">
+    <img th:if="${employee.photoPath != null && employee.photoPath != 'N/A'}"
+         th:src="${employee.photoPath}"
+         th:alt="${employee.employeeName}"
+         class="employee-photo">
+    <img th:if="${employee.photoPath == null || employee.photoPath == 'N/A'}"
+         src="/images/default-avatar.png"
+         th:alt="${employee.employeeName}"
+         class="employee-photo">
+    <h4 th:text="${employee.employeeName}">Employee Name</h4>
+    <p class="info-label">Employee ID: <span class="info-value" th:text="${employee.employeeId}">123456</span></p>
+    <p class="info-label">Blood Group: <span class="info-value" th:text="${employee.bloodGroup}">O+</span></p>
+    <p class="info-label">Company Contact: <span class="info-value">111 1111 111</span></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

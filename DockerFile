@@ -1,0 +1,14 @@
+# Use OpenJDK as base image
+FROM openjdk:21-jdk-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the JAR file
+COPY target/*.jar app.jar
+
+# Expose port (match the one in application.properties)
+EXPOSE 9191
+
+# Run the application
+CMD ["java", "-jar", "app.jar"]
