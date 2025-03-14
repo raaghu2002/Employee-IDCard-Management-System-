@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: wizzybox.IDCard_Backend.IdCardBackendApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.85 s -- in wizzybox.IDCard_Backend.IdCardBackendApplicationTests

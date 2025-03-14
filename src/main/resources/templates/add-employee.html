@@ -237,6 +237,7 @@
       },
       phone: (value) => /^[6-9]\d{9}$/.test(value),
       email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      personalEmail: (value) => validations.email(value) && value.endsWith('@gmail.com'),
       officeEmail: (value) => validations.email(value) && value.endsWith('@gmail.com'),
       address: (value) => value.length >= 10 && value.length <= 200,
       citizenship: (value) => /^[A-Za-z\s-]{5,30}$/.test(value),
