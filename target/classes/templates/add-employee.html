@@ -391,12 +391,17 @@
 
           // Upload photo
           if (formData.get("photo").size > 0) {
-              const photoResponse = await fetch(`/api/employees/${employee.employeeId}/photo`, {
-                  method: "POST",
-                  body: formData
-              });
-              if (!photoResponse.ok) throw new Error('Photo upload failed');
-          }
+    const photoResponse = await fetch(`/api/employees/${employee.employeeId}/photo`, {
+        method: "POST",
+        body: formData
+    });
+
+    const responseText = await photoResponse.text(); // Read the response body as text
+    console.log("Photo Upload Response:", photoResponse.status, responseText);
+
+    if (!photoResponse.ok) throw new Error('Photo upload failed');
+}
+
 
           alert("Employee created successfully!");
           window.location.href = "/";
