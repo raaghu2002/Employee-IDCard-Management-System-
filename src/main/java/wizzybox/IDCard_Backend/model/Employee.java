@@ -28,12 +28,14 @@ public class Employee {
     @Column(name = "contact_number", nullable = false)
     @NotBlank(message = "Contact number is required")
     @Pattern(regexp = "\\d{10}", message = "Contact number must be 10 digits")
-//    @Pattern(regexp = "\\d{10,15}", message = "Contact number must be between 10 and 15 digits")
+    // @Pattern(regexp = "\\d{10,15}", message = "Contact number must be between 10
+    // and 15 digits")
     private String contactNumber;
 
     @Column(name = "alternate_contact_number")
     @Pattern(regexp = "\\d{10}", message = "Alternate contact number must be 10 digits")
-//    @Pattern(regexp = "\\d{10,15}", message = "Contact number must be between 10 and 15 digits")
+    // @Pattern(regexp = "\\d{10,15}", message = "Contact number must be between 10
+    // and 15 digits")
     private String alternateContactNumber;
 
     @Column(name = "personal_email", nullable = false)
@@ -112,9 +114,18 @@ public class Employee {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "photo_path")
-    private String photoPath;
+    @Lob
+    @Column(name = "photo", columnDefinition = "LONGBLOB")
+    private byte[] photo; // Store image as binary data
 
-    @Column(name = "qr_code_path")
-    private String qrCodePath;
+    @Lob
+    @Column(name = "qr_code", columnDefinition = "LONGBLOB")
+    private byte[] qrCode; // Store QR code as binary data
+
+
+//    @Column(name = "photo_path")
+//    private String photoPath;
+//
+//    @Column(name = "qr_code_path")
+//    private String qrCodePath;
 }
