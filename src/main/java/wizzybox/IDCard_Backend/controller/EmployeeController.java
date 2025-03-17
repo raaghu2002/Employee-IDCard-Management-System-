@@ -65,19 +65,20 @@ public class EmployeeController {
         }
     }
 
-//    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @ResponseBody
-//    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
-//            throws IOException {
-//        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
-//
-//        if (photo.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
-//        }
-//
-//        employeeService.saveEmployeePhoto(id, photo);
-//        return ResponseEntity.ok("Photo uploaded successfully");
-//    }
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
+            throws IOException {
+        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
+
+        if (photo.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+        }
+
+        employeeService.saveEmployeePhoto(id, photo);
+        return ResponseEntity.ok("Photo uploaded successfully");
+    }
 
     @GetMapping(value = "/api/employees/{id}/photo", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
