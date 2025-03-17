@@ -114,18 +114,9 @@ public class Employee {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Lob
-    @Column(name = "photo", columnDefinition = "LONGBLOB")
-    private byte[] photo; // Store image as binary data
+    @Column(name = "photo_path")
+    private String photoPath;
 
-    @Lob
-    @Column(name = "qr_code", columnDefinition = "LONGBLOB")
-    private byte[] qrCode; // Store QR code as binary data
-
-
-//    @Column(name = "photo_path")
-//    private String photoPath;
-//
-//    @Column(name = "qr_code_path")
-//    private String qrCodePath;
+    @Column(name = "qr_code_path")
+    private String qrCodePath;
 }

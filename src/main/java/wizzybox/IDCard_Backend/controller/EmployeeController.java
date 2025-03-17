@@ -65,7 +65,6 @@ public class EmployeeController {
         }
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
@@ -79,25 +78,6 @@ public class EmployeeController {
         employeeService.saveEmployeePhoto(id, photo);
         return ResponseEntity.ok("Photo uploaded successfully");
     }
-
-    @GetMapping(value = "/api/employees/{id}/photo", produces = MediaType.IMAGE_PNG_VALUE)
-    @ResponseBody
-    public ResponseEntity<byte[]> getEmployeePhoto(@PathVariable int id) {
-        Employee employee = employeeService.getEmployeeById(id);
-        return employee.getPhoto() != null
-                ? ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(employee.getPhoto())
-                : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping(value = "/api/employees/{id}/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
-    @ResponseBody
-    public ResponseEntity<byte[]> getEmployeeQRCode(@PathVariable int id) {
-        Employee employee = employeeService.getEmployeeById(id);
-        return employee.getQrCode() != null
-                ? ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(employee.getQrCode())
-                : ResponseEntity.notFound().build();
-    }
-
 
     @GetMapping("/api/employees")
     @ResponseBody
