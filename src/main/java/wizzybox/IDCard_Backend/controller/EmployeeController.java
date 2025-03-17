@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "http://localhost:9191")
+@CrossOrigin(origins = "*")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
