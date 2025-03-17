@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://sincere-learning-production.up.railway.app")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
