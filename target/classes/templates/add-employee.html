@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Employee</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin-top: 20px;
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    .error {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 5px;
+    }
+
+    input:invalid,
+    select:invalid {
+        border-color: #dc3545;
+    }
+
+    input:valid,
+    select:valid {
+        border-color: #28a745;
+    }
+  </style>
+</head>
+
+<body>
+<div class="form-container">
+  <h1>Add Employee</h1>
+  <form id="employeeForm" enctype="multipart/form-data">
+    <!-- Personal Details -->
+    <div class="section-title">Personal Details</div>
+    <div class="form-group">
+      <label>Employee Name:</label>
+      <input type="text" name="employeeName" required placeholder="Enter Employee Name" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Date of Birth:</label>
+      <input type="date" name="dob" required placeholder="YYYY-MM-DD" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Gender:</label>
+      <select name="gender" required>
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Citizenship:</label>
+      <input type="text" id="citizenship" name="citizenship" required placeholder="Enter Citizenship" />
+      <div class="error"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Father's Name:</label>
+      <input type="text" name="fatherName" required placeholder="Enter Father's Name" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Mother's Name:</label>
+      <input type="text" name="motherName" required placeholder="Enter Mother's Name" />
+      <div class="error"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Blood Group:</label>
+      <select name="bloodGroup" required>
+        <option value="">Select Blood Group</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+      </select>
+      <div class="error"></div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="section-title">Contact Information</div>
+    <div class="form-group">
+      <label>Contact Number:</label>
+      <input type="tel" name="contactNumber" required placeholder="Enter Contact Number" maxlength="10" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Alternate Contact Number:</label>
+      <input type="tel" name="alternateContactNumber" placeholder="Enter Alternate Contact Number"
+             maxlength="10" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Personal Email:</label>
+      <input type="email" name="personalEmail" required placeholder="Enter Personal Email" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Office Email:</label>
+      <input type="email" name="officeEmail" required placeholder="Enter Office Email" />
+      <div class="error"></div>
+    </div>
+
+    <!-- Address -->
+    <div class="section-title">Address</div>
+    <div class="form-group">
+      <label>Current Address:</label>
+      <input type="text" name="currentAddress" required placeholder="Enter Current Address" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Permanent Address:</label>
+      <input type="text" name="permanentAddress" required placeholder="Enter Permanent Address" />
+      <div class="error"></div>
+    </div>
+
+    <!-- Job Details -->
+    <div class="section-title">Job Details</div>
+    <div class="form-group">
+      <label>Job Role:</label>
+      <input type="text" name="jobRole" required placeholder="Enter Job Role" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Date of Joining:</label>
+      <input type="date" name="doj" required placeholder="YYYY-MM-DD" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Fresher:</label>
+      <select name="fresher" id="fresherSelect" required>
+        <option value="">Select is Fresher</option>
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+      </select>
+      <div class="error"></div>
+    </div>
+    <div class="form-group" id="previousCompanyField">
+      <label>Previous Company:</label>
+      <input type="text" name="previousCompany" placeholder="Enter Previous Company" />
+      <div class="error"></div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="section-title">Additional Information</div>
+    <div class="form-group">
+      <label>Marital Status:</label>
+      <select name="maritalStatus" id="maritalStatusSelect" required>
+        <option value="">Select Marital Status</option>
+        <option value="Single">Single</option>
+        <option value="Married">Married</option>
+      </select>
+      <div class="error"></div>
+    </div>
+    <div class="form-group" id="marriageDateField">
+      <label>Date of Marriage:</label>
+      <input type="date" name="dateOfMarriage" placeholder="YYYY-MM-DD" />
+      <div class="error"></div>
+    </div>
+    <div class="form-group">
+      <label>Photo:</label>
+      <input type="file" name="photo" accept="image/*" required />
+      <div class="error"></div>
+    </div>
+    <img id="imagePreview" src="" alt="Image Preview" style="max-width: 150px; display: none; margin-top: 10px" />
+
+    <!-- Submit -->
+    <div class="form-group">
+      <button type="submit">Submit</button>
+      <button type="button" onclick="window.location.href='/'">
+        Back
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Validation functions
+  const validations = {
+      name: (value) => /^[A-Za-z\s\.'-]{2,38}$/.test(value),
+      date: (value, minAge = 18, maxAge = 55) => {
+          const diff = Date.now() - new Date(value).getTime();
+          const age = new Date(diff).getUTCFullYear() - 1970;
+          return age >= minAge && age <= maxAge;
+      },
+      phone: (value) => /^[6-9]\d{9}$/.test(value),
+      email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      personalEmail: (value) => validations.email(value) && value.endsWith('@gmail.com'),
+      officeEmail: (value) => validations.email(value) && value.endsWith('@gmail.com'),
+      address: (value) => value.length >= 10 && value.length <= 200,
+      citizenship: (value) => /^[A-Za-z\s-]{5,30}$/.test(value),
+      jobRole: (value) => /^[A-Za-z\s&-]{3,50}$/.test(value)
+  };
+
+  // Error handling utilities
+  function showError(element, message) {
+      const errorDiv = element.closest('.form-group').querySelector('.error');
+      errorDiv.textContent = message;
+      element.style.borderColor = '#dc3545';
+  }
+
+  function clearErrors() {
+      document.querySelectorAll('.error').forEach(e => e.textContent = '');
+      document.querySelectorAll('input, select').forEach(el => {
+          el.style.borderColor = '#ddd';
+      });
+  }
+
+  // Function to check if contact number or email exists
+  async function checkIfExists(fieldValue, fieldType) {
+      try {
+          const response = await fetch(`/api/employees/check/${fieldType}?value=${encodeURIComponent(fieldValue)}`, {
+              method: "GET",
+          });
+
+          if (!response.ok) throw new Error('Failed to check');
+          const result = await response.json();
+          return result;
+      } catch (error) {
+          console.error("Error checking existence:", error);
+          return false;
+      }
+  }
+
+
+  // Form submission handler
+  document.getElementById("employeeForm").onsubmit = async function (event) {
+      event.preventDefault();
+      clearErrors();
+      let isValid = true;
+
+      const fields = [
+          { element: document.querySelector('[name="employeeName"]'), validate: validations.name, message: 'Invalid name (2-50 characters, only letters/spaces)' },
+          { element: document.querySelector('[name="dob"]'), validate: (v) => validations.date(v), message: 'Must be 18-100 years old' },
+          { element: document.querySelector('[name="fatherName"]'), validate: validations.name, message: 'Invalid name format' },
+          { element: document.querySelector('[name="motherName"]'), validate: validations.name, message: 'Invalid name format' },
+          { element: document.querySelector('[name="contactNumber"]'), validate: validations.phone, message: 'Invalid Indian phone number' },
+          { element: document.querySelector('[name="alternateContactNumber"]'), validate: (v) => !v || validations.phone(v), message: 'Invalid phone number' },
+          { element: document.querySelector('[name="personalEmail"]'), validate: validations.email, message: 'Invalid email format' },
+          { element: document.querySelector('[name="officeEmail"]'), validate: validations.officeEmail, message: 'Must be @gmail.com email' },
+          { element: document.querySelector('[name="currentAddress"]'), validate: validations.address, message: 'Address must be 10-200 characters' },
+          { element: document.querySelector('[name="permanentAddress"]'), validate: validations.address, message: 'Address must be 10-200 characters' },
+          { element: document.querySelector('[name="citizenship"]'), validate: validations.citizenship, message: 'Invalid citizenship format' },
+          { element: document.querySelector('[name="jobRole"]'), validate: validations.jobRole, message: 'Invalid job role' },
+          { element: document.querySelector('[name="doj"]'), validate: (v) => new Date(v) <= new Date(), message: 'Future dates not allowed' }
+      ];
+
+      // Check all fields
+      fields.forEach(({ element, validate, message }) => {
+          if (!validate(element.value.trim())) {
+              isValid = false;
+              showError(element, message);
+          }
+      });
+
+      // Check if contact number and alternate number are the same
+      const contactNumber = document.querySelector('[name="contactNumber"]').value.trim();
+      const alternateContactNumber = document.querySelector('[name="alternateContactNumber"]').value.trim();
+      if (contactNumber === alternateContactNumber && alternateContactNumber) {
+          isValid = false;
+          showError(document.querySelector('[name="alternateContactNumber"]'), 'Contact and alternate numbers cannot be the same');
+      }
+
+      // Check if contact number or email already exists
+      if (await checkIfExists(contactNumber, 'contactNumber')) {
+          isValid = false;
+          showError(document.querySelector('[name="contactNumber"]'), 'Contact number already exists');
+      }
+
+      // Check if personalEmail and officeEmail are the same
+            const personalEmail = document.querySelector('[name="personalEmail"]').value.trim();
+            const officeEmail = document.querySelector('[name="officeEmail"]').value.trim();
+            if (personalEmail === officeEmail) {
+                isValid = false;
+                showError(document.querySelector('[name="officeEmail"]'), 'Personal and Office emails cannot be the same');
+            }
+
+      const alternateContactNumberValue = document.querySelector('[name="alternateContactNumber"]').value.trim();
+      if (alternateContactNumberValue && await checkIfExists(alternateContactNumberValue, 'contactNumber')) {
+          isValid = false;
+          showError(document.querySelector('[name="alternateContactNumber"]'), 'Alternate contact number already exists');
+      }
+
+      if (await checkIfExists(document.querySelector('[name="personalEmail"]').value.trim(), 'personalEmail')) {
+          isValid = false;
+          showError(document.querySelector('[name="personalEmail"]'), 'Personal Email already exists');
+      }
+
+      if (await checkIfExists(document.querySelector('[name="officeEmail"]').value.trim(), 'officeEmail')) {
+          isValid = false;
+          showError(document.querySelector('[name="officeEmail"]'), 'Office Email already exists');
+      }
+
+      // Conditional validations
+      const isFresher = document.querySelector('[name="fresher"]').value === 'false';
+      const previousCompany = document.querySelector('[name="previousCompany"]');
+      if (isFresher && !previousCompany.value.trim()) {
+          isValid = false;
+          showError(previousCompany, 'Previous company required for experienced candidates');
+      }
+
+      const isMarried = document.querySelector('[name="maritalStatus"]').value === 'Married';
+      const marriageDate = document.querySelector('[name="dateOfMarriage"]');
+      if (isMarried && !marriageDate.value) {
+          isValid = false;
+          showError(marriageDate, 'Marriage date required');
+      }
+
+      // File validation
+      const photoInput = document.querySelector('[name="photo"]');
+      if (photoInput.files[0]) {
+          const file = photoInput.files[0];
+          if (!['image/jpg', 'image/jpeg', 'image/png'].includes(file.type)) {
+              isValid = false;
+              showError(photoInput, 'Only JPG/PNG files allowed');
+          }
+          if (file.size > 2 * 1024 * 1024) {
+              isValid = false;
+              showError(photoInput, 'File size must be <2MB');
+          }
+      }
+
+      if (!isValid) return;
+
+      // Submit logic
+      try {
+          const formData = new FormData(this);
+          const employeeData = Object.fromEntries([...formData.entries()].filter(([k]) => k !== 'photo'));
+
+          // Create employee
+          const response = await fetch("/api/employees", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(employeeData)
+          });
+
+          if (!response.ok) throw new Error('Failed to create employee');
+          const employee = await response.json();
+
+          // Upload photo
+          if (formData.get("photo").size > 0) {
+    const photoResponse = await fetch(`/api/employees/${employee.employeeId}/photo`, {
+        method: "POST",
+        body: formData
+    });
+
+    const responseText = await photoResponse.text(); // Read the response body as text
+    console.log("Photo Upload Response:", photoResponse.status, responseText);
+
+    if (!photoResponse.ok) throw new Error('Photo upload failed');
+}
+
+
+          alert("Employee created successfully!");
+          window.location.href = "/";
+      } catch (error) {
+          alert("Error: " + error.message);
+      }
+  };
+
+  // Real-time validation
+  document.querySelectorAll('input, select').forEach(element => {
+      element.addEventListener('input', function () {
+          this.style.borderColor = '#ddd';
+          const error = this.closest('.form-group')?.querySelector('.error');
+          if (error) error.textContent = '';
+      });
+  });
+
+  // Restrict input length for contact numbers
+  document.querySelectorAll('input[type="tel"]').forEach(input => {
+      input.addEventListener('input', function () {
+          if (this.value.length > 10) {
+              this.value = this.value.slice(0, 10);
+          }
+      });
+  });
+
+  // Conditional field visibility
+  document.getElementById("fresherSelect").addEventListener("change", function () {
+      document.getElementById("previousCompanyField").style.display =
+          this.value === "false" ? "block" : "none";
+  });
+
+  document.getElementById("maritalStatusSelect").addEventListener("change", function () {
+      document.getElementById("marriageDateField").style.display =
+          this.value === "Married" ? "block" : "none";
+  });
+
+  // Image preview
+  document.querySelector('input[name="photo"]').addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+              const preview = document.getElementById("imagePreview");
+              preview.src = e.target.result;
+              preview.style.display = "block";
+          }
+          reader.readAsDataURL(file);
+      } else {
+          document.getElementById("imagePreview").style.display = "none";
+          document.getElementById("imagePreview").src = "";
+      }
+  });
+
+  // Initial setup
+      document.getElementById("fresherSelect").style.display = "No";
+      document.getElementById("previousCompanyField").style.display = "none";
+      document.getElementById("marriageDateField").style.display = "none";
+</script>
+</body>
+
+</html>
