@@ -58,34 +58,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(Employee employee) {
         try {
-            // Generate a unique ID if not set
+            // Generate unique Employee ID
             if (employee.getEmployeeId() == 0) {
                 int uniqueId;
                 Random random = new Random();
                 do {
-                    uniqueId = random.nextInt(900000) + 100000;
+                    uniqueId = random.nextInt(900000) + 100000; // Random 6-digit number
                 } while (employeeRepository.existsById(uniqueId));
                 employee.setEmployeeId(uniqueId);
             }
 
-            // Save the employee first to ensure an ID is generated
-            Employee savedEmployee = employeeRepository.save(employee);
-
-            // Generate QR Code
-            String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
+            // Generate QR Code URL
+            String qrData = "https://sincere-learning-production.up.railway.app/" + employee.getEmployeeId();
             String qrCodeUrl = qrCodeGenerator.generateQRCode(qrData);
+            employee.setQrCodePath(qrCodeUrl);
 
-            if (qrCodeUrl == null || qrCodeUrl.isEmpty()) {
-                throw new RuntimeException("QR Code generation failed. URL is empty.");
-            }
+            // Save Employee with QR Code
+            Employee savedEmployee = employeeRepository.save(employee);
+            System.out.println("Employee saved successfully: " + savedEmployee.getEmployeeId());
+            System.out.println("Generated QR Code URL: " + qrCodeUrl);
 
-            // Set QR code URL and update employee record
-            savedEmployee.setQrCodePath(qrCodeUrl);
-            return employeeRepository.save(savedEmployee);
+            return savedEmployee;
 
         } catch (Exception e) {
             System.err.println("Error creating employee: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Error generating QR code", e);
         }
     }
@@ -94,35 +90,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void saveEmployeePhoto(int id, MultipartFile photo) {
         try {
             Employee employee = getEmployeeById(id);
-
-            if (photo == null || photo.isEmpty()) {
-                throw new RuntimeException("Uploaded photo is empty or null.");
+            if (employee == null) {
+                throw new RuntimeException("Employee not found with ID: " + id);
             }
 
-            // Upload image to Cloudinary
-            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
+            System.out.println("Uploading photo for Employee ID: " + id);
 
-            if (uploadResult == null || !uploadResult.containsKey("secure_url")) {
-                throw new RuntimeException("Cloudinary upload failed. No URL returned.");
-            }
+            // Upload Image to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(),
+                    ObjectUtils.asMap("folder", "employee_photos",
+                            "resource_type", "image"));
 
             String cloudinaryUrl = uploadResult.get("secure_url").toString();
-            employee.setPhotoPath(cloudinaryUrl);
+            System.out.println("Cloudinary Image URL: " + cloudinaryUrl);
 
-            // Save updated employee record
+            // Save Photo Path in Database
+            employee.setPhotoPath(cloudinaryUrl);
             employeeRepository.save(employee);
 
         } catch (IOException e) {
             System.err.println("Photo upload failed: " + e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException("Could not upload photo", e);
-        } catch (Exception e) {
-            System.err.println("Unexpected error while saving photo: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Unexpected error while saving employee photo", e);
         }
     }
-
 
 //    @Override
 //    public Employee createEmployee(Employee employee) {
