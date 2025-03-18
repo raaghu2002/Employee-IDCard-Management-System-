@@ -68,16 +68,24 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setEmployeeId(uniqueId);
             }
 
-            // Save the employee to get the ID
+            // Save the employee first to ensure an ID is generated
             Employee savedEmployee = employeeRepository.save(employee);
 
             // Generate QR Code
             String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
             String qrCodeUrl = qrCodeGenerator.generateQRCode(qrData);
 
+            if (qrCodeUrl == null || qrCodeUrl.isEmpty()) {
+                throw new RuntimeException("QR Code generation failed. URL is empty.");
+            }
+
+            // Set QR code URL and update employee record
             savedEmployee.setQrCodePath(qrCodeUrl);
             return employeeRepository.save(savedEmployee);
+
         } catch (Exception e) {
+            System.err.println("Error creating employee: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error generating QR code", e);
         }
     }
@@ -87,18 +95,34 @@ public class EmployeeServiceImpl implements EmployeeService {
         try {
             Employee employee = getEmployeeById(id);
 
+            if (photo == null || photo.isEmpty()) {
+                throw new RuntimeException("Uploaded photo is empty or null.");
+            }
+
             // Upload image to Cloudinary
             Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
-            String cloudinaryUrl = uploadResult.get("secure_url").toString();
 
-            // Save Cloudinary URL in the database
+            if (uploadResult == null || !uploadResult.containsKey("secure_url")) {
+                throw new RuntimeException("Cloudinary upload failed. No URL returned.");
+            }
+
+            String cloudinaryUrl = uploadResult.get("secure_url").toString();
             employee.setPhotoPath(cloudinaryUrl);
+
+            // Save updated employee record
             employeeRepository.save(employee);
 
         } catch (IOException e) {
+            System.err.println("Photo upload failed: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Could not upload photo", e);
+        } catch (Exception e) {
+            System.err.println("Unexpected error while saving photo: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Unexpected error while saving employee photo", e);
         }
     }
+
 
 //    @Override
 //    public Employee createEmployee(Employee employee) {
