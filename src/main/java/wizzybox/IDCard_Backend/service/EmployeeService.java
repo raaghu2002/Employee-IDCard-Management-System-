@@ -30,4 +30,6 @@ public interface EmployeeService {
     boolean existsByOfficeEmail(String officeEmail);
     boolean existsByPersonalEmail(String personalEmail);
 
+    void updateEmployeePhotoUrl(int id, String imageUrl);
+
 }

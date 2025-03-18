@@ -470,4 +470,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public boolean existsByPersonalEmail(String personalEmail) {
         return employeeRepository.existsByPersonalEmail(personalEmail);
     }
+
+    public void updateEmployeePhotoUrl(int employeeId, String photoUrl) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setPhotoPath(photoUrl);
+        employeeRepository.save(employee);
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 import wizzybox.IDCard_Backend.model.Employee;
 import wizzybox.IDCard_Backend.model.OldEmployee;
 import wizzybox.IDCard_Backend.service.EmployeeService;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,15 +19,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @CrossOrigin(origins = "https://sincere-learning-production.up.railway.app")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final Cloudinary cloudinary;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, Cloudinary cloudinary) {
         this.employeeService = employeeService;
+        this.cloudinary = cloudinary;
     }
 
     @GetMapping("/")
@@ -70,15 +75,15 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/{id}/photo")
-    public ResponseEntity<?> uploadEmployeePhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadEmployeePhoto(@PathVariable int id, @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
         }
         try {
-            String fileName = id + "_" + file.getOriginalFilename();
-            Path filePath = Paths.get("uploads", fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            return ResponseEntity.ok("File uploaded successfully: " + fileName);
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            String imageUrl = uploadResult.get("url").toString();
+            employeeService.updateEmployeePhotoUrl(id, imageUrl);
+            return ResponseEntity.ok("File uploaded successfully: " + imageUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed: " + e.getMessage());
         }
