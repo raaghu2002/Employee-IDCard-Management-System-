@@ -1,5 +1,6 @@
 wizzybox\IDCard_Backend\model\OldEmployee.class
 wizzybox\IDCard_Backend\repository\OldEmployeeRepository.class
+wizzybox\IDCard_Backend\Config\CloudinaryConfig.class
 wizzybox\IDCard_Backend\service\impl\EmployeeServiceImpl.class
 wizzybox\IDCard_Backend\service\EmployeeService.class
 wizzybox\IDCard_Backend\util\QRCodeGenerator.class

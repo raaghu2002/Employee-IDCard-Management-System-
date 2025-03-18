@@ -1,6 +1,9 @@
 package wizzybox.IDCard_Backend.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import wizzybox.IDCard_Backend.exception.ResourceNotFoundException;
@@ -18,6 +21,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -28,6 +32,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final OldEmployeeRepository oldEmployeeRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, OldEmployeeRepository oldEmployeeRepository) {
         this.employeeRepository = employeeRepository;
@@ -65,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             String qrFileName = savedEmployee.getEmployeeName() + ".png";
             String qrFilePath = QR_CODES_DIRECTORY + qrFileName;
 
-            QRCodeGenerator.generateQRCode(qrData, qrFilePath);
+            QRCodeGenerator.generateQRCode(qrData);
             savedEmployee.setQrCodePath("/qrcodes/" + qrFileName);
 
             return employeeRepository.save(savedEmployee);
@@ -104,23 +112,41 @@ public class EmployeeServiceImpl implements EmployeeService {
     // employeeRepository.save(employee);
     // }
 
+//    @Override
+//    public void saveEmployeePhoto(int id, MultipartFile photo) {
+//        try {
+//            Employee employee = getEmployeeById(id);
+//            String extension = getFileExtension(photo.getOriginalFilename());
+//
+//            // Save photo with employee name
+//            String photoName = employee.getEmployeeName() + extension;
+//            Path photoPath = Paths.get(IMAGES_DIRECTORY + photoName);
+//            Files.copy(photo.getInputStream(), photoPath, StandardCopyOption.REPLACE_EXISTING);
+//
+//            // Update photo path in database
+//            employee.setPhotoPath("/images/" + photoName);
+//            employeeRepository.save(employee);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not save photo file", e);
+//        }
+//    }
+
     @Override
     public void saveEmployeePhoto(int id, MultipartFile photo) {
         try {
             Employee employee = getEmployeeById(id);
-            String extension = getFileExtension(photo.getOriginalFilename());
 
-            // Save photo with employee name
-            String photoName = employee.getEmployeeName() + extension;
-            Path photoPath = Paths.get(IMAGES_DIRECTORY + photoName);
-            Files.copy(photo.getInputStream(), photoPath, StandardCopyOption.REPLACE_EXISTING);
+            // Upload image to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
+            String cloudinaryUrl = uploadResult.get("secure_url").toString(); // Get URL
 
-            // Update photo path in database
-            employee.setPhotoPath("/images/" + photoName);
+            // Save Cloudinary URL to database instead of local path
+            employee.setPhotoPath(cloudinaryUrl);
             employeeRepository.save(employee);
 
         } catch (IOException e) {
-            throw new RuntimeException("Could not save photo file", e);
+            throw new RuntimeException("Could not upload photo", e);
         }
     }
 
