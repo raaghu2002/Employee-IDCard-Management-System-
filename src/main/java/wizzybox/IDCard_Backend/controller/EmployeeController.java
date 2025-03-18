@@ -12,6 +12,10 @@ import wizzybox.IDCard_Backend.model.OldEmployee;
 import wizzybox.IDCard_Backend.service.EmployeeService;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Controller
@@ -65,19 +69,21 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
-            throws IOException {
-        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
-
-        if (photo.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+    @PostMapping("/employees/{id}/photo")
+    public ResponseEntity<?> uploadEmployeePhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty");
         }
-
-        employeeService.saveEmployeePhoto(id, photo);
-        return ResponseEntity.ok("Photo uploaded successfully");
+        try {
+            String fileName = id + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get("uploads", fileName);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            return ResponseEntity.ok("File uploaded successfully: " + fileName);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed: " + e.getMessage());
+        }
     }
+
 
     @GetMapping("/api/employees")
     @ResponseBody
