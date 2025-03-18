@@ -32,14 +32,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final OldEmployeeRepository oldEmployeeRepository;
+    private final QRCodeGenerator qrCodeGenerator;
 
     @Autowired
     private Cloudinary cloudinary;
 
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, OldEmployeeRepository oldEmployeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, OldEmployeeRepository oldEmployeeRepository , QRCodeGenerator qrCodeGenerator) {
         this.employeeRepository = employeeRepository;
         this.oldEmployeeRepository = oldEmployeeRepository;
+        this.qrCodeGenerator = qrCodeGenerator;
+        this.cloudinary = cloudinary;
         createDirectories();
     }
 
@@ -70,17 +73,62 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             // Generate QR Code
             String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
-            String qrFileName = savedEmployee.getEmployeeName() + ".png";
-            String qrFilePath = QR_CODES_DIRECTORY + qrFileName;
+            String qrCodeUrl = qrCodeGenerator.generateQRCode(qrData);
 
-            QRCodeGenerator.generateQRCode(qrData);
-            savedEmployee.setQrCodePath("/qrcodes/" + qrFileName);
-
+            savedEmployee.setQrCodePath(qrCodeUrl);
             return employeeRepository.save(savedEmployee);
         } catch (Exception e) {
             throw new RuntimeException("Error generating QR code", e);
         }
     }
+
+    @Override
+    public void saveEmployeePhoto(int id, MultipartFile photo) {
+        try {
+            Employee employee = getEmployeeById(id);
+
+            // Upload image to Cloudinary
+            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
+            String cloudinaryUrl = uploadResult.get("secure_url").toString();
+
+            // Save Cloudinary URL in the database
+            employee.setPhotoPath(cloudinaryUrl);
+            employeeRepository.save(employee);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Could not upload photo", e);
+        }
+    }
+
+//    @Override
+//    public Employee createEmployee(Employee employee) {
+//        try {
+//            // Generate a unique ID if not set
+//            if (employee.getEmployeeId() == 0) {
+//                int uniqueId;
+//                Random random = new Random();
+//                do {
+//                    uniqueId = random.nextInt(900000) + 100000;
+//                } while (employeeRepository.existsById(uniqueId));
+//                employee.setEmployeeId(uniqueId);
+//            }
+//
+//            // Save the employee to get the ID
+//            Employee savedEmployee = employeeRepository.save(employee);
+//
+//            // Generate QR Code
+//            String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
+//            String qrFileName = savedEmployee.getEmployeeName() + ".png";
+//            String qrFilePath = QR_CODES_DIRECTORY + qrFileName;
+//
+//            QRCodeGenerator.generateQRCode(qrData);
+//            savedEmployee.setQrCodePath("/qrcodes/" + qrFileName);
+//
+//            return employeeRepository.save(savedEmployee);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Error generating QR code", e);
+//        }
+//    }
 
     // @Override
     // public void saveEmployeePhoto(int id, MultipartFile photo) throws IOException
@@ -132,23 +180,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        }
 //    }
 
-    @Override
-    public void saveEmployeePhoto(int id, MultipartFile photo) {
-        try {
-            Employee employee = getEmployeeById(id);
-
-            // Upload image to Cloudinary
-            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
-            String cloudinaryUrl = uploadResult.get("secure_url").toString(); // Get URL
-
-            // Save Cloudinary URL to database instead of local path
-            employee.setPhotoPath(cloudinaryUrl);
-            employeeRepository.save(employee);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Could not upload photo", e);
-        }
-    }
+//    @Override
+//    public void saveEmployeePhoto(int id, MultipartFile photo) {
+//        try {
+//            Employee employee = getEmployeeById(id);
+//
+//            // Upload image to Cloudinary
+//            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
+//            String cloudinaryUrl = uploadResult.get("secure_url").toString(); // Get URL
+//
+//            // Save Cloudinary URL to database instead of local path
+//            employee.setPhotoPath(cloudinaryUrl);
+//            employeeRepository.save(employee);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not upload photo", e);
+//        }
+//    }
 
     private String getFileExtension(String filename) {
         return filename.substring(filename.lastIndexOf("."));
