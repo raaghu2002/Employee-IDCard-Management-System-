@@ -405,7 +405,7 @@
               const photoFormData = new FormData();
               photoFormData.append("file", file);
 
-              const photoResponse = await fetch(`/api/employees/${employee.employeeId}/photo`, {
+              const photoResponse = await fetch(`/employees/${employee.employeeId}/photo`, {
                   method: "POST",
                   body: photoFormData
               });
