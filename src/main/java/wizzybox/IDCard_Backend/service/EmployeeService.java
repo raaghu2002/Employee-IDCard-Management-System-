@@ -1,10 +1,12 @@
 package wizzybox.IDCard_Backend.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import wizzybox.IDCard_Backend.model.Employee;
 import wizzybox.IDCard_Backend.model.OldEmployee;
 import java.io.IOException;
 import java.util.List;
+
 
 public interface EmployeeService {
     List<Employee> getAllEmployees();
