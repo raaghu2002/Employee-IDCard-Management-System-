@@ -389,29 +389,19 @@
           if (!response.ok) throw new Error('Failed to create employee');
           const employee = await response.json();
 
-          // Upload photo if present
-          const photoInput = document.querySelector('[name="photo"]');
-          if (photoInput.files.length > 0) {
-              const file = photoInput.files[0];
+          // Upload photo
+          if (formData.get("photo").size > 0) {
+    const photoResponse = await fetch(`/api/employees/${employee.employeeId}/photo`, {
+        method: "POST",
+        body: formData
+    });
 
-              // File validation
-              if (!['image/jpeg', 'image/png'].includes(file.type)) {
-                  throw new Error('Only JPG/PNG files allowed');
-              }
-              if (file.size > 2 * 1024 * 1024) {
-                  throw new Error('File size must be <2MB');
-              }
+    const responseText = await photoResponse.text(); // Read the response body as text
+    console.log("Photo Upload Response:", photoResponse.status, responseText);
 
-              const photoFormData = new FormData();
-              photoFormData.append("file", file);
+    if (!photoResponse.ok) throw new Error('Photo upload failed');
+}
 
-              const photoResponse = await fetch(`/employees/${employee.employeeId}/photo`, {
-                  method: "POST",
-                  body: photoFormData
-              });
-
-              if (!photoResponse.ok) throw new Error('Photo upload failed');
-          }
 
           alert("Employee created successfully!");
           window.location.href = "/";
