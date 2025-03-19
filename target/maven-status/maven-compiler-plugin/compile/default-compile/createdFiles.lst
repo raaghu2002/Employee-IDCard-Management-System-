@@ -1,4 +1,5 @@
 wizzybox\IDCard_Backend\model\OldEmployee.class
+wizzybox\IDCard_Backend\config\CloudinaryConfig.class
 wizzybox\IDCard_Backend\repository\OldEmployeeRepository.class
 wizzybox\IDCard_Backend\service\impl\EmployeeServiceImpl.class
 wizzybox\IDCard_Backend\service\EmployeeService.class

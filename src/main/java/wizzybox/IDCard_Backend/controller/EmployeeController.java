@@ -1,5 +1,6 @@
 package wizzybox.IDCard_Backend.controller;
 
+import com.cloudinary.Cloudinary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final Cloudinary cloudinary;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService , Cloudinary cloudinary) {
         this.employeeService = employeeService;
+        this.cloudinary = cloudinary;
     }
 
     @GetMapping("/")
@@ -65,19 +68,35 @@ public class EmployeeController {
         }
     }
 
+//    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @ResponseBody
+//    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
+//            throws IOException {
+//        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
+//
+//        if (photo.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
+//        }
+//
+//        employeeService.saveEmployeePhoto(id, photo);
+//        return ResponseEntity.ok("Photo uploaded successfully");
+//    }
+
     @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
-    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
-            throws IOException {
-        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
-
+    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo) {
         if (photo.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
         }
 
-        employeeService.saveEmployeePhoto(id, photo);
-        return ResponseEntity.ok("Photo uploaded successfully");
+        try {
+            String imageUrl = employeeService.uploadEmployeePhoto(id, photo);
+            return ResponseEntity.ok(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading photo");
+        }
     }
+
 
     @GetMapping("/api/employees")
     @ResponseBody

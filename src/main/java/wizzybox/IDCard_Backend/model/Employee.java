@@ -119,4 +119,11 @@ public class Employee {
 
     @Column(name = "qr_code_path")
     private String qrCodePath;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
+
+    @Column(name = "qr_code_url")
+    private String qrCodeUrl;
+
 }

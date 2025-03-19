@@ -182,15 +182,17 @@ h1 {
 
 <script>
     // Fetch and display employees
-    fetch('/api/employees')
-        .then(response => response.json())
-        .then(employees => {
-            const grid = document.getElementById('employeeGrid');
-            employees.forEach(employee => {
-                grid.appendChild(createEmployeeCard(employee));
-            });
-        })
-        .catch(error => console.error('Error:', error));
+        fetch('/api/employees')
+  .then(response => response.json())
+  .then(employees => {
+      console.log("API Response:", employees);
+      const grid = document.getElementById('employeeGrid');
+      employees.forEach(employee => {
+          grid.appendChild(createEmployeeCard(employee));
+      });
+  })
+  .catch(error => console.error("Error fetching employees:", error));
+
 
 <!--    function createEmployeeCard(employee) {-->
 <!--        const card = document.createElement('div');-->
@@ -239,15 +241,24 @@ h1 {
     card.className = 'employee-card';
     card.setAttribute('data-search', `${employee.employeeName} ${employee.jobRole} ${employee.officeEmail}`.toLowerCase());
 
-    // Directly use the paths from the employee object
-    let photoUrl = employee.photoPath ? employee.photoPath : '/images/default-avatar.svg';
-    let qrCodeUrl = employee.qrCodePath;
+    // ✅ Ensure correct paths & fallback images
+    let photoUrl = employee.photoPath && employee.photoPath.startsWith("http")
+        ? employee.photoPath
+        : '/images/default-avatar.svg';
 
-    console.log(employee.photoPath);
-    console.log(employee.qrCodePath);
+    let qrCodeUrl = employee.qrCodePath && employee.qrCodePath.startsWith("http")
+        ? employee.qrCodePath
+        : `/qrcodes/${employee.qrCodePath}`;
 
-  card.innerHTML = `
-        <img src="${photoUrl}" alt="Employee Photo" class="employee-photo">
+    // ✅ Debugging logs
+    console.log("Employee Name:", employee.employeeName);
+    console.log("Photo Path:", employee.photoPath);
+    console.log("QR Code Path:", employee.qrCodePath);
+    console.log("Final Photo URL:", photoUrl);
+    console.log("Final QR Code URL:", qrCodeUrl);
+
+    card.innerHTML = `
+        <img src="${photoUrl}" onerror="this.src='/images/default-avatar.svg';" alt="Employee Photo" class="employee-photo">
         <h3>${employee.employeeName}</h3>
         <div class="employee-info">
             <p><strong>ID:</strong> ${employee.employeeId}</p>
@@ -265,11 +276,12 @@ h1 {
             <p><strong>Citizenship:</strong> ${employee.citizenship}</p>
             <p><strong>Job Role:</strong> ${employee.jobRole}</p>
             <p><strong>QR Code:</strong></p>
-            <img src="${qrCodeUrl}" alt="QR Code" width="80">
+            <img src="${qrCodeUrl}" onerror="this.src='/images/qr-placeholder.png';" alt="QR Code" width="80">
         </div>
     `;
     return card;
 }
+
 
 
 
