@@ -29,6 +29,5 @@ public interface EmployeeService {
 
     boolean existsByOfficeEmail(String officeEmail);
     boolean existsByPersonalEmail(String personalEmail);
-    String uploadEmployeePhoto(int id, MultipartFile photo) throws IOException;
 
 }

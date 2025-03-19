@@ -1,7 +1,5 @@
 package wizzybox.IDCard_Backend.service.impl;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +18,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -32,15 +28,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final OldEmployeeRepository oldEmployeeRepository;
-    private final Cloudinary cloudinary;
-    private final QRCodeGenerator qrCodeGenerator;
 
-
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, OldEmployeeRepository oldEmployeeRepository , Cloudinary cloudinary ,QRCodeGenerator qrCodeGenerator) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, OldEmployeeRepository oldEmployeeRepository) {
         this.employeeRepository = employeeRepository;
         this.oldEmployeeRepository = oldEmployeeRepository;
-        this.cloudinary = cloudinary ;
-        this.qrCodeGenerator = qrCodeGenerator;
         createDirectories();
     }
 
@@ -66,25 +57,22 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setEmployeeId(uniqueId);
             }
 
-            // Save employee to get an ID
+            // Save the employee to get the ID
             Employee savedEmployee = employeeRepository.save(employee);
 
-            // Generate QR Code and Upload to Cloudinary
+            // Generate QR Code
             String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
             String qrFileName = savedEmployee.getEmployeeName() + ".png";
-            String qrFilePath = "temp_qr_codes/" + qrFileName; // Temp path
+            String qrFilePath = QR_CODES_DIRECTORY + qrFileName;
 
-            String cloudinaryUrl = qrCodeGenerator.generateQRCode(qrData, qrFilePath);
-
-            // ✅ Store Cloudinary URL in the database
-            savedEmployee.setQrCodePath(cloudinaryUrl);
+            QRCodeGenerator.generateQRCode(qrData, qrFilePath);
+            savedEmployee.setQrCodePath("/qrcodes/" + qrFileName);
 
             return employeeRepository.save(savedEmployee);
         } catch (Exception e) {
             throw new RuntimeException("Error generating QR code", e);
         }
     }
-
 
     // @Override
     // public void saveEmployeePhoto(int id, MultipartFile photo) throws IOException
@@ -393,27 +381,5 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean existsByPersonalEmail(String personalEmail) {
         return employeeRepository.existsByPersonalEmail(personalEmail);
-    }
-
-    @Override
-    public String uploadEmployeePhoto(int id, MultipartFile photo) throws IOException {
-        Optional<Employee> employeeOpt = employeeRepository.findById(id);
-        if (employeeOpt.isPresent()) {
-            Employee employee = employeeOpt.get();
-
-            // Upload image to Cloudinary
-            Map uploadResult = cloudinary.uploader().upload(photo.getBytes(), ObjectUtils.emptyMap());
-
-            // Get the URL of the uploaded image
-            String photoUrl = (String) uploadResult.get("url");
-
-            // Save the photo URL in the database
-            employee.setPhotoUrl(photoUrl);
-            employeeRepository.save(employee);
-
-            return photoUrl;
-        } else {
-            throw new IOException("Employee not found");
-        }
     }
 }
