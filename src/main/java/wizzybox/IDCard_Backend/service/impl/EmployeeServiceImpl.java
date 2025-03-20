@@ -1,5 +1,6 @@
 package wizzybox.IDCard_Backend.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -162,17 +163,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
 
-    @Override
+    @Transactional
     public void deleteEmployee(int id) {
         Employee employee = getEmployeeById(id);
-
-        // Move employee to OldEmployees table before deletion
+        if (employee == null) {
+            throw new RuntimeException("Employee not found");
+        }
         moveToOldEmployees(employee, "DELETED");
-
-        // Delete employee from the main table
         employeeRepository.deleteById(id);
-
     }
+
 
     private void moveToOldEmployees(Employee employee, String actionType) {
         try {
