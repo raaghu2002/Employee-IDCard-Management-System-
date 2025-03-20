@@ -19,6 +19,8 @@ public class QRCodeGenerator {
         int width = 300;
         int height = 300;
 
+        System.out.println(data);
+
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.MARGIN, 1);

@@ -51,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee savedEmployee = employeeRepository.save(employee);
 
             // Generate QR Code
-            String qrData = "https://sincere-learning-production.up.railway.app/" + savedEmployee.getEmployeeId();
+            String qrData = "https://sincere-learning-production.up.railway.app/info/" + savedEmployee.getEmployeeId();
             byte[] qrCodeBytes = QRCodeGenerator.generateQRCode(qrData);
 
             // Store QR code bytes in the employee entity
