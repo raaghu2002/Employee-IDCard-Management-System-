@@ -1,5 +1,7 @@
 package wizzybox.IDCard_Backend.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import wizzybox.IDCard_Backend.model.Employee;
 import wizzybox.IDCard_Backend.model.OldEmployee;
+import wizzybox.IDCard_Backend.repository.EmployeeRepository;
 import wizzybox.IDCard_Backend.service.EmployeeService;
 
 import java.io.IOException;
@@ -18,10 +21,13 @@ import java.util.List;
 @CrossOrigin(origins = "https://sincere-learning-production.up.railway.app")
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
+    private final EmployeeService employeeService;
+    private final EmployeeRepository employeeRepository;
+
+    public EmployeeController(EmployeeService employeeService , EmployeeRepository employeeRepository) {
         this.employeeService = employeeService;
+        this.employeeRepository = employeeRepository;
     }
 
     @GetMapping("/")
@@ -65,19 +71,7 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseBody
-    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
-            throws IOException {
-        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
 
-        if (photo.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded");
-        }
-
-        employeeService.saveEmployeePhoto(id, photo);
-        return ResponseEntity.ok("Photo uploaded successfully");
-    }
 
     @GetMapping("/api/employees")
     @ResponseBody
@@ -152,5 +146,47 @@ public class EmployeeController {
 
         return ResponseEntity.ok(exists);
     }
+
+    @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
+            throws IOException {
+
+        System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
+
+        if (photo.isEmpty()) {
+            return ResponseEntity.badRequest().body("No file uploaded");
+        }
+
+        employeeService.saveEmployeePhoto(id, photo);
+        return ResponseEntity.ok("Photo uploaded successfully");
+    }
+
+    @GetMapping("/api/employees/{id}/photo")
+    public ResponseEntity<byte[]> getEmployeePhoto(@PathVariable int id) {
+        byte[] photoData = employeeService.getEmployeePhoto(id);
+        if (photoData == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG); // Adjust as needed
+        return new ResponseEntity<>(photoData, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/qrcode")
+    public ResponseEntity<byte[]> getQRCode(@PathVariable int id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        byte[] qrCode = employee.getQrCodedata();
+        if (qrCode == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(qrCode, headers, HttpStatus.OK);
+    }
+
 
 }

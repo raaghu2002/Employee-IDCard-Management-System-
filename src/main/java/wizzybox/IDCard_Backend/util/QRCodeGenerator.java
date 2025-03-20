@@ -7,21 +7,15 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import javax.imageio.ImageIO;
 
 public class QRCodeGenerator {
-    public static String generateQRCode(String data, String fullFilePath) throws WriterException, IOException {
-        File file = new File(fullFilePath);
-        File dir = file.getParentFile();
-        if (dir != null && !dir.exists()) {
-            dir.mkdirs();
-        }
-
+    public static byte[] generateQRCode(String data) throws WriterException, IOException {
         int width = 300;
         int height = 300;
 
@@ -30,9 +24,13 @@ public class QRCodeGenerator {
         hints.put(EncodeHintType.MARGIN, 1);
 
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height, hints);
-        Path path = FileSystems.getDefault().getPath(fullFilePath);
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
 
-        return fullFilePath;
+        // Convert BitMatrix to BufferedImage
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+        // Convert BufferedImage to byte array
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        return byteArrayOutputStream.toByteArray();
     }
 }

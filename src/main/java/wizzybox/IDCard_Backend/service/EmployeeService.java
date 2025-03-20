@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface EmployeeService {
+    OldEmployee getOldEmployeeById(int id);
+
     List<Employee> getAllEmployees();
 
     Employee getEmployeeById(int id);
@@ -19,15 +21,14 @@ public interface EmployeeService {
 
     void freezeEmployee(int id);
 
-    void saveEmployeePhoto(int id, MultipartFile photo) throws IOException;
-
     List<OldEmployee> getAllOldEmployees();
-
-    OldEmployee getOldEmployeeById(int id);
 
     boolean existsByContactNumber(String contactNumber);
 
     boolean existsByOfficeEmail(String officeEmail);
     boolean existsByPersonalEmail(String personalEmail);
+
+    void saveEmployeePhoto(int id, MultipartFile photo) throws IOException;
+    byte[] getEmployeePhoto(int id);
 
 }

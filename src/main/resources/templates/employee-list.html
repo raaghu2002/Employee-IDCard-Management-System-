@@ -241,21 +241,9 @@ h1 {
     card.className = 'employee-card';
     card.setAttribute('data-search', `${employee.employeeName} ${employee.jobRole} ${employee.officeEmail}`.toLowerCase());
 
-    // ✅ Ensure correct paths & fallback images
-    let photoUrl = employee.photoPath && employee.photoPath.startsWith("http")
-        ? employee.photoPath
-        : '/images/default-avatar.svg';
-
-    let qrCodeUrl = employee.qrCodePath && employee.qrCodePath.startsWith("http")
-        ? employee.qrCodePath
-        : `/qrcodes/${employee.qrCodePath}`;
-
-    // ✅ Debugging logs
-    console.log("Employee Name:", employee.employeeName);
-    console.log("Photo Path:", employee.photoPath);
-    console.log("QR Code Path:", employee.qrCodePath);
-    console.log("Final Photo URL:", photoUrl);
-    console.log("Final QR Code URL:", qrCodeUrl);
+    // ✅ Fetch images dynamically from the backend API
+    let photoUrl = `/api/employees/${employee.employeeId}/photo`;
+    let qrCodeUrl = `/api/employees/${employee.employeeId}/qrcode`;
 
     card.innerHTML = `
         <img src="${photoUrl}" onerror="this.src='/images/default-avatar.svg';" alt="Employee Photo" class="employee-photo">
@@ -281,6 +269,7 @@ h1 {
     `;
     return card;
 }
+
 
 
 

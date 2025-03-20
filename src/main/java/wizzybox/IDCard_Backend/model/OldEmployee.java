@@ -105,11 +105,13 @@ public class OldEmployee {
     @Column(name = "previous_company")
     private String previousCompany;
 
-    @Column(name = "photo_path")
-    private String photoPath;
+    @Column(name = "photo_data")
+    @Lob
+    private byte[] photodata;
 
-    @Column(name = "qr_code_path")
-    private String qrCodePath;
+    @Column(name = "qr_code_data")
+    @Lob
+    private byte[] qrCodedata;
 
     @Pattern(regexp = "FROZEN|DELETED", message = "Action type must be FROZEN or DELETED")
     @Column(name = "action_type")

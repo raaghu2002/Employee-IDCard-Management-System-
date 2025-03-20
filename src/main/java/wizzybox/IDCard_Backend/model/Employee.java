@@ -114,9 +114,13 @@ public class Employee {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "photo_path")
-    private String photoPath;
+    @Column(name = "photo_data")
+    @Lob
+    private byte[] photodata;
 
-    @Column(name = "qr_code_path")
-    private String qrCodePath;
+    @Column(name = "qr_code_data")
+    @Lob
+    private byte[] qrCodedata;
+
+
 }
