@@ -1,5 +1,6 @@
 package wizzybox.IDCard_Backend.controller;
 
+import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import wizzybox.IDCard_Backend.model.Employee;
 import wizzybox.IDCard_Backend.model.OldEmployee;
 import wizzybox.IDCard_Backend.repository.EmployeeRepository;
 import wizzybox.IDCard_Backend.service.EmployeeService;
+import wizzybox.IDCard_Backend.util.QRCodeGenerator;
 
 import java.io.IOException;
 import java.util.List;
@@ -148,7 +151,7 @@ public class EmployeeController {
     }
 
     @PostMapping(value = "/api/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadPhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
+    public ResponseEntity<String> saveEmployeePhoto(@PathVariable int id, @RequestParam("photo") MultipartFile photo)
             throws IOException {
 
         System.out.println("Received file: " + photo.getOriginalFilename() + ", Size: " + photo.getSize());
@@ -161,32 +164,42 @@ public class EmployeeController {
         return ResponseEntity.ok("Photo uploaded successfully");
     }
 
+
+
     @GetMapping("/api/employees/{id}/photo")
     public ResponseEntity<byte[]> getEmployeePhoto(@PathVariable int id) {
-        byte[] photoData = employeeService.getEmployeePhoto(id);
-        if (photoData == null) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        if (employee.getPhotodata() == null || employee.getPhotodata().length == 0) {
             return ResponseEntity.notFound().build();
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG); // Adjust as needed
-        return new ResponseEntity<>(photoData, headers, HttpStatus.OK);
+        headers.setContentType(MediaType.parseMediaType(employee.getPhotoType())); // Use stored MIME type
+
+        return new ResponseEntity<>(employee.getPhotodata(), headers, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/qrcode")
-    public ResponseEntity<byte[]> getQRCode(@PathVariable int id) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        byte[] qrCode = employee.getQrCodedata();
-        if (qrCode == null) {
-            return ResponseEntity.notFound().build();
+
+    @GetMapping("/api/employees/{id}/qrcode")
+    public ResponseEntity<byte[]> getQRCode(@PathVariable int id) throws WriterException, IOException {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        if (employee.getQrCodedata() == null) {
+            byte[] qrCode = QRCodeGenerator.generateQRCode("Employee ID: " + id);
+            employee.setQrCodedata(qrCode);
+            employeeRepository.save(employee);
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
-        return new ResponseEntity<>(qrCode, headers, HttpStatus.OK);
+        return new ResponseEntity<>(employee.getQrCodedata(), headers, HttpStatus.OK);
     }
+
+
 
 
 }

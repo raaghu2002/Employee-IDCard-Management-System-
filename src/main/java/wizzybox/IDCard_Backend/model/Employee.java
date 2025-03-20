@@ -114,13 +114,16 @@ public class Employee {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "photo_data")
     @Lob
+    @Column(name = "photodata", columnDefinition = "LONGBLOB")
     private byte[] photodata;
 
-    @Column(name = "qr_code_data")
     @Lob
+    @Column(name = "qrcode_data", columnDefinition = "LONGBLOB")
     private byte[] qrCodedata;
+
+    @Column(name = "photo_type")
+    private String photoType;
 
 
 }

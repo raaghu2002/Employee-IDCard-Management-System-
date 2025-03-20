@@ -1,8 +1,10 @@
 package wizzybox.IDCard_Backend.service.impl;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import wizzybox.IDCard_Backend.exception.ResourceNotFoundException;
 import wizzybox.IDCard_Backend.model.Employee;
 import wizzybox.IDCard_Backend.model.OldEmployee;
@@ -241,17 +243,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void saveEmployeePhoto(int id, MultipartFile photo) throws IOException {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-        employee.setPhotodata(photo.getBytes()); // Convert and store as byte array
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        employee.setPhotodata(photo.getBytes());
+        employee.setPhotoType(photo.getContentType());
         employeeRepository.save(employee);
     }
+
 
     @Override
     public byte[] getEmployeePhoto(int id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
-
         return employee.getPhotodata();
     }
+
 }
