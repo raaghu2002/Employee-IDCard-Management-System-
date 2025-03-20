@@ -150,9 +150,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void freezeEmployee(int id) {
-        Employee oldEmployee = getEmployeeById(id);
+        Employee employee = getEmployeeById(id);
 
-        employeeRepository.save(oldEmployee);
+        // Move employee to OldEmployees table before marking as frozen
+        moveToOldEmployees(employee, "FROZEN");
+
+        // Save the updated employee (if needed, update its status)
+        employeeRepository.save(employee);
 
     }
 
