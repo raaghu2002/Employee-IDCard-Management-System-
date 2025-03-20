@@ -65,14 +65,24 @@ public class EmployeeController {
         try {
             int employeeId = Integer.parseInt(id);
             Employee employee = employeeService.getEmployeeById(employeeId);
+
+            // Handle case where employee is not found
+            if (employee == null) {
+                model.addAttribute("errorMessage", "Employee not found");
+                return "error"; // Ensure 'error.html' exists in templates
+            }
+
             model.addAttribute("employee", employee);
-            return "QRCode-Info";
+            return "QRCode-Info"; // Ensure this template exists
         } catch (NumberFormatException e) {
+            model.addAttribute("errorMessage", "Invalid Employee ID format");
             return "error";
         } catch (Exception e) {
+            model.addAttribute("errorMessage", "Unexpected error occurred");
             return "error";
         }
     }
+
 
 
 
