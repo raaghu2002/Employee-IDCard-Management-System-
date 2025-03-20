@@ -89,17 +89,17 @@
 <div class="id-card-container" onclick="flipCard()">
     <div class="id-card">
         <img src="/Wizzybox-Logo.webp" th:src="@{/Wizzybox-Logo.webp}" alt="Company Logo" class="company-logo">
-        <img th:if="${employee.photoPath != null && employee.photoPath != 'N/A'}" th:src="@{${employee.photoPath}}" th:alt="${employee.employeeName}" class="employee-photo">
-        <img th:unless="${employee.photoPath != null && employee.photoPath != 'N/A'}" src="/images/default-avatar.png" class="employee-photo" th:alt="${employee.employeeName}">
+<!--        <img th:if="${employee.photoPath != null && employee.photoPath != 'N/A'}" th:src="@{${employee.photoPath}}" th:alt="${employee.employeeName}" class="employee-photo">-->
+<!--        <img th:unless="${employee.photoPath != null && employee.photoPath != 'N/A'}" src="/images/default-avatar.png" class="employee-photo" th:alt="${employee.employeeName}">-->
         <h4 th:text="${employee.employeeName}">Employee Name</h4>
         <p class="info-label">Employee ID: <span class="info-value" th:text="${employee.employeeId}">123456</span></p>
         <p class="info-label">Blood Group: <span class="info-value" th:text="${employee.bloodGroup}">O+</span></p>
         <p class="info-label">Company Contact: <span class="info-value">111 1111 111</span></p>
     </div>
     <div class="id-card-back">
-        <div class="qr-code">
-            <img th:if="${employee.qrCodePath != null && employee.qrCodePath != 'N/A'}" th:src="@{${employee.qrCodePath}}" th:alt="QR Code for ${employee.employeeName}">
-        </div>
+<!--        <div class="qr-code">-->
+<!--            <img th:if="${employee.qrCodePath != null && employee.qrCodePath != 'N/A'}" th:src="@{${employee.qrCodePath}}" th:alt="QR Code for ${employee.employeeName}">-->
+<!--        </div>-->
         <p class="info-label">Tap to Flip Back</p>
     </div>
 </div>
